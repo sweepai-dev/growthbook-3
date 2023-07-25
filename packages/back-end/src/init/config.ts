@@ -59,6 +59,26 @@ export type ConfigFile = {
       "id" | "organization" | "dateCreated" | "dateUpdated"
     >;
   };
+  cdnProviders?: {
+    fastly?: {
+      apiToken: string;
+      serviceId: string;
+    };
+    cloudflare?: {
+      apiToken: string;
+      zoneId: string;
+    };
+    cloudfront?: {
+      accessKeyId: string;
+      secretAccessKey: string;
+      distributionId: string;
+    };
+    googleCloud?: {
+      projectId: string;
+      keyFilename: string;
+      url: string;
+    };
+  };
 };
 
 const CONFIG_FILE = path.join(
@@ -125,6 +145,34 @@ function loadConfig(initial = false) {
     if (!EMAIL_FROM)
       logger.error(
         "Email is enabled, but missing required EMAIL_FROM env variable"
+      );
+  }
+
+  if (config?.cdnProviders?.fastly) {
+    if (!config.cdnProviders.fastly.apiToken || !config.cdnProviders.fastly.serviceId)
+      logger.error(
+        "Fastly is enabled, but missing required Fastly API Token or Service ID env variable"
+      );
+  }
+
+  if (config?.cdnProviders?.cloudflare) {
+    if (!config.cdnProviders.cloudflare.apiToken || !config.cdnProviders.cloudflare.zoneId)
+      logger.error(
+        "Cloudflare is enabled, but missing required Cloudflare API Token or Zone ID env variable"
+      );
+  }
+
+  if (config?.cdnProviders?.cloudfront) {
+    if (!config.cdnProviders.cloudfront.accessKeyId || !config.cdnProviders.cloudfront.secretAccessKey || !config.cdnProviders.cloudfront.distributionId)
+      logger.error(
+        "CloudFront is enabled, but missing required CloudFront Access Key ID, Secret Access Key or Distribution ID env variable"
+      );
+  }
+
+  if (config?.cdnProviders?.googleCloud) {
+    if (!config.cdnProviders.googleCloud.projectId || !config.cdnProviders.googleCloud.keyFilename || !config.cdnProviders.googleCloud.url)
+      logger.error(
+        "Google Cloud CDN is enabled, but missing required Google Cloud Project ID, Key Filename or URL env variable"
       );
   }
 }
