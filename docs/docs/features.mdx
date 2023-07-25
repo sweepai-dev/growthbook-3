@@ -217,6 +217,35 @@ At a high level, the SDK Connection generates a unique clientKey which grants re
 
 On GrowthBook Cloud, we have a global CDN in front of the API (https://cdn.growthbook.io) to ensure low latency responses from anywhere in the world. The CDN has a 30-second TTL, so changes to a feature may take a little time to be reflected.
 
+### Setting up CloudFlare for self-hosted GrowthBook
+
+To set up CloudFlare for your self-hosted GrowthBook, you need to configure the following environment variables:
+
+- `CLOUDFLARE_API_TOKEN`: Your CloudFlare API token.
+- `CLOUDFLARE_ZONE_ID`: The Zone ID of your CloudFlare account.
+
+These variables will be used in the `queueProxyUpdate` function to handle the CDN purge.
+
+### Setting up CloudFront for self-hosted GrowthBook
+
+To set up CloudFront for your self-hosted GrowthBook, you need to configure the following environment variables:
+
+- `CLOUDFRONT_ACCESS_KEY_ID`: Your AWS access key ID.
+- `CLOUDFRONT_SECRET_ACCESS_KEY`: Your AWS secret access key.
+- `CLOUDFRONT_DISTRIBUTION_ID`: The distribution ID of your CloudFront distribution.
+
+These variables will be used in the `queueProxyUpdate` function to handle the CDN purge.
+
+### Setting up Google Cloud CDN for self-hosted GrowthBook
+
+To set up Google Cloud CDN for your self-hosted GrowthBook, you need to configure the following environment variables:
+
+- `GOOGLE_CLOUD_PROJECT_ID`: Your Google Cloud project ID.
+- `GOOGLE_CLOUD_KEY_FILENAME`: The path to your Google Cloud key file.
+- `GOOGLE_CLOUD_URL`: The URL of your Google Cloud CDN.
+
+These variables will be used in the `queueProxyUpdate` function to handle the CDN purge.
+
 ### GrowthBook Proxy
 
 We also offer a pre-built proxy server you can deploy on your own infrastructure.

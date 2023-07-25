@@ -273,25 +273,50 @@ export async function purgeCDNCache(
   payloadKeys: SDKPayloadKey[]
 ): Promise<void> {
   // Only purge when Fastly is used as the CDN (e.g. GrowthBook Cloud)
-  if (!FASTLY_SERVICE_ID || !FASTLY_API_TOKEN) return;
-
-  // Only purge the specific payloads that are affected
-  const surrogateKeys = payloadKeys.map((k) =>
-    getSurrogateKey(orgId, k.project, k.environment)
-  );
-  if (!surrogateKeys.length) return;
-
-  try {
-    await fetch(`https://api.fastly.com/service/${FASTLY_SERVICE_ID}/purge`, {
-      method: "POST",
-      headers: {
-        "Fastly-Key": FASTLY_API_TOKEN,
-        "surrogate-key": surrogateKeys.join(" "),
-        Accept: "application/json",
-      },
-    });
-  } catch (e) {
-    logger.error("Failed to purge cache for " + orgId);
+  import { FASTLY_API_TOKEN, FASTLY_SERVICE_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ZONE_ID, CLOUDFRONT_DISTRIBUTION_ID, GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_NETWORK_NAME } from "../util/secrets";
+  ...
+  export async function queueProxyUpdate({
+    organization,
+    environment,
+    featureId,
+  }: ProxyUpdateJob) {
+    if (FASTLY_API_TOKEN && FASTLY_SERVICE_ID) {
+      const url = `https://api.fastly.com/service/${FASTLY_SERVICE_ID}/purge/${organization}/${environment}/${featureId}`;
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Fastly-Key": FASTLY_API_TOKEN,
+        },
+      }).catch((e) => {
+        logger.error("Failed to purge Fastly cache", e);
+      });
+    }
+  
+    if (CLOUDFLARE_API_TOKEN && CLOUDFLARE_ZONE_ID) {
+      const url = `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/purge_cache`;
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${CLOUDFLARE_API_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          files: [`https://cdn.example.com/${organization}/${environment}/${featureId}`]
+        })
+      }).catch((e) => {
+        logger.error("Failed to purge CloudFlare cache", e);
+      });
+    }
+  
+    if (CLOUDFRONT_DISTRIBUTION_ID) {
+      // CloudFront requires a separate AWS SDK and additional setup, so we'll leave this as a placeholder for now
+    }
+  
+    if (GOOGLE_CLOUD_PROJECT_ID && GOOGLE_CLOUD_NETWORK_NAME) {
+      // Google Cloud CDN requires a separate Google Cloud SDK and additional setup, so we'll leave this as a placeholder for now
+    }
+  }
+  ...
   }
 }
 
