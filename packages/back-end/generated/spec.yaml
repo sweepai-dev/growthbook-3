@@ -860,7 +860,6 @@ paths:
                 - datasourceId
                 - trackingKey
                 - assignmentQueryId
-                - implementation
               properties:
                 datasourceId:
                   type: string
@@ -905,13 +904,10 @@ paths:
                   type: boolean
                 hashAttribute:
                   type: string
-                implementation:
+                releasedVariationId:
                   type: string
-                  enum:
-                    - visual
-                    - code
-                    - configuration
-                    - custom
+                excludeFromPayload:
+                  type: boolean
                 variations:
                   type: array
                   minItems: 2
@@ -1098,6 +1094,10 @@ paths:
                   type: boolean
                 hashAttribute:
                   type: string
+                releasedVariationId:
+                  type: string
+                excludeFromPayload:
+                  type: boolean
                 variations:
                   type: array
                   minItems: 2
@@ -2797,6 +2797,7 @@ components:
             - status
             - winner
             - releasedVariationId
+            - excludeFromPayload
             - conclusions
           properties:
             status:
@@ -2807,6 +2808,8 @@ components:
               type: string
             releasedVariationId:
               type: string
+            excludeFromPayload:
+              type: boolean
     ExperimentMetric:
       type: object
       required:
